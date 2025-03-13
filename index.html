@@ -20,7 +20,7 @@
             <a-entity id="model"
                       obj-model="obj: url(models/fish-2.obj); mtl: url(models/fish-2.mtl)"
                       position="0 0 0"
-                      scale="0.5 0.5 0.5"
+                      scale="0.2 0.2 0.2"
                       rotation="0 180 0">
             </a-entity>
         </a-marker>
@@ -31,34 +31,20 @@
         document.addEventListener("DOMContentLoaded", function () {
             let model = document.getElementById("model");
             let scaleFactor = 0.5;
-            let lastX, lastY, lastDistance = null;
-
-            // Rotasi dan geser dengan drag
-            document.addEventListener("pointerdown", (e) => {
-                lastX = e.clientX;
-                lastY = e.clientY;
-            });
-
+            let lastX, lastDistance = null;
+            
+            // Rotasi dengan drag
+            document.addEventListener("pointerdown", (e) => lastX = e.clientX);
             document.addEventListener("pointermove", (e) => {
                 if (e.pressure > 0) {
                     let rotation = model.getAttribute("rotation");
-                    let position = model.getAttribute("position");
-
-                    let deltaX = e.clientX - lastX;
-                    let deltaY = e.clientY - lastY;
-
-                    rotation.y += deltaX * 0.5; // Rotasi kiri/kanan
-                    position.y += deltaY * -0.01; // Geser atas/bawah
-
+                    rotation.y += (e.clientX - lastX) * 0.5;
                     model.setAttribute("rotation", rotation);
-                    model.setAttribute("position", position);
-
                     lastX = e.clientX;
-                    lastY = e.clientY;
                 }
             });
 
-            // Zoom dengan scroll (desktop) atau pinch (mobile)
+            // Zoom dengan pinch (mobile) atau scroll (desktop)
             document.addEventListener("wheel", (e) => adjustScale(e.deltaY * -0.001));
             document.addEventListener("touchmove", (e) => {
                 if (e.touches.length === 2) {
