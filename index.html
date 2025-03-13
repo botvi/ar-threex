@@ -33,11 +33,40 @@
             let scaleFactor = 1;
             let rotationSpeed = 0.05;
 
-            // Zoom menggunakan scroll
+            // Menangani zoom di desktop
             window.addEventListener("wheel", function (event) {
-                scaleFactor += event.deltaY * -0.001;
-                scaleFactor = Math.max(0.5, Math.min(2, scaleFactor)); // Batas zoom
+                scaleFactor += event.deltaY * -0.0005; // Mengurangi sensitivitas zoom
+                scaleFactor = Math.max(0.5, Math.min(2, scaleFactor));
                 model.setAttribute("scale", `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
+            });
+
+            // Menambahkan touch events untuk zoom di mobile
+            let initialDistance = 0;
+            window.addEventListener("touchstart", function(event) {
+                if (event.touches.length === 2) {
+                    initialDistance = Math.hypot(
+                        event.touches[0].pageX - event.touches[1].pageX,
+                        event.touches[0].pageY - event.touches[1].pageY
+                    );
+                }
+            });
+
+            window.addEventListener("touchmove", function(event) {
+                if (event.touches.length === 2) {
+                    const currentDistance = Math.hypot(
+                        event.touches[0].pageX - event.touches[1].pageX,
+                        event.touches[0].pageY - event.touches[1].pageY
+                    );
+                    
+                    if (initialDistance > 0) {
+                        const delta = (currentDistance - initialDistance) * 0.003; // Faktor sensitivitas pinch zoom
+                        scaleFactor += delta;
+                        scaleFactor = Math.max(0.5, Math.min(2, scaleFactor));
+                        model.setAttribute("scale", `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
+                    }
+                    
+                    initialDistance = currentDistance;
+                }
             });
 
             // Drag untuk rotasi
