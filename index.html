@@ -31,20 +31,34 @@
         document.addEventListener("DOMContentLoaded", function () {
             let model = document.getElementById("model");
             let scaleFactor = 0.5;
-            let lastX, lastDistance = null;
-            
-            // Rotasi dengan drag
-            document.addEventListener("pointerdown", (e) => lastX = e.clientX);
+            let lastX, lastY, lastDistance = null;
+
+            // Rotasi dan geser dengan drag
+            document.addEventListener("pointerdown", (e) => {
+                lastX = e.clientX;
+                lastY = e.clientY;
+            });
+
             document.addEventListener("pointermove", (e) => {
                 if (e.pressure > 0) {
                     let rotation = model.getAttribute("rotation");
-                    rotation.y += (e.clientX - lastX) * 0.5;
+                    let position = model.getAttribute("position");
+
+                    let deltaX = e.clientX - lastX;
+                    let deltaY = e.clientY - lastY;
+
+                    rotation.y += deltaX * 0.5; // Rotasi kiri/kanan
+                    position.y += deltaY * -0.01; // Geser atas/bawah
+
                     model.setAttribute("rotation", rotation);
+                    model.setAttribute("position", position);
+
                     lastX = e.clientX;
+                    lastY = e.clientY;
                 }
             });
 
-            // Zoom dengan pinch (mobile) atau scroll (desktop)
+            // Zoom dengan scroll (desktop) atau pinch (mobile)
             document.addEventListener("wheel", (e) => adjustScale(e.deltaY * -0.001));
             document.addEventListener("touchmove", (e) => {
                 if (e.touches.length === 2) {
