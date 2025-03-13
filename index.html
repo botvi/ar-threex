@@ -18,12 +18,12 @@
     <!-- Scene AR -->
     <a-scene embedded arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;">
         <!-- Deteksi marker pattern -->
-        <a-marker type="pattern" url="marker.patt">
+        <a-marker type="pattern" url="hiro.patt">
             <!-- Model 3D (Dikurangi skalanya agar tidak terlalu besar di mobile) -->
             <a-entity id="model" 
-                      obj-model="obj: url(models/model.obj); mtl: url(models/model.mtl)"
+                      obj-model="obj: url(models/test.obj); mtl: url(models/test.mtl)"
                       position="0 0 0"
-                      scale="0.3 0.3 0.3"  <!-- Kurangi ukuran -->
+                      scale="0.3 0.3 0.3"
                       rotation="0 180 0">
             </a-entity>
         </a-marker>
