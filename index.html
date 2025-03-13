@@ -2,71 +2,47 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>AR.js + Three.js (OBJ & MTL)</title>
-    
-    <!-- A-Frame dan AR.js -->
+
+    <!-- A-Frame & AR.js -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ar.js@latest/aframe/build/aframe-ar.min.js"></script>
+
+    <style>
+        body { margin: 0; overflow: hidden; }
+    </style>
 </head>
-<body style="margin: 0; overflow: hidden;">
+<body>
 
     <!-- Scene AR -->
-    <a-scene embedded arjs>
+    <a-scene embedded arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;">
         <!-- Deteksi marker pattern -->
-        <a-marker type="pattern" url="hiro.patt">
-            <!-- Model 3D (OBJ + MTL) -->
+        <a-marker type="pattern" url="marker.patt">
+            <!-- Model 3D (Dikurangi skalanya agar tidak terlalu besar di mobile) -->
             <a-entity id="model" 
-                      obj-model="obj: url(models/test.obj); mtl: url(models/test.mtl)"
+                      obj-model="obj: url(models/model.obj); mtl: url(models/model.mtl)"
                       position="0 0 0"
-                      scale="0.5 0.5 0.5"
+                      scale="0.3 0.3 0.3"  <!-- Kurangi ukuran -->
                       rotation="0 180 0">
             </a-entity>
         </a-marker>
-        <a-entity camera></a-entity>
+
+        <!-- Perbaiki posisi kamera -->
+        <a-entity camera position="0 1.6 5"></a-entity>
     </a-scene>
 
     <script>
-        // Interaksi dengan model 3D
         document.addEventListener("DOMContentLoaded", function () {
             let model = document.getElementById("model");
             let scaleFactor = 1;
             let rotationSpeed = 0.05;
 
-            // Menangani zoom di desktop
+            // Zoom menggunakan scroll
             window.addEventListener("wheel", function (event) {
-                scaleFactor += event.deltaY * -0.0005; // Mengurangi sensitivitas zoom
-                scaleFactor = Math.max(0.5, Math.min(2, scaleFactor));
+                scaleFactor += event.deltaY * -0.001;
+                scaleFactor = Math.max(0.3, Math.min(1.5, scaleFactor)); // Kurangi batas zoom
                 model.setAttribute("scale", `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
-            });
-
-            // Menambahkan touch events untuk zoom di mobile
-            let initialDistance = 0;
-            window.addEventListener("touchstart", function(event) {
-                if (event.touches.length === 2) {
-                    initialDistance = Math.hypot(
-                        event.touches[0].pageX - event.touches[1].pageX,
-                        event.touches[0].pageY - event.touches[1].pageY
-                    );
-                }
-            });
-
-            window.addEventListener("touchmove", function(event) {
-                if (event.touches.length === 2) {
-                    const currentDistance = Math.hypot(
-                        event.touches[0].pageX - event.touches[1].pageX,
-                        event.touches[0].pageY - event.touches[1].pageY
-                    );
-                    
-                    if (initialDistance > 0) {
-                        const delta = (currentDistance - initialDistance) * 0.003; // Faktor sensitivitas pinch zoom
-                        scaleFactor += delta;
-                        scaleFactor = Math.max(0.5, Math.min(2, scaleFactor));
-                        model.setAttribute("scale", `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
-                    }
-                    
-                    initialDistance = currentDistance;
-                }
             });
 
             // Drag untuk rotasi
