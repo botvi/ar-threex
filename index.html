@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR.js + Three.js (OBJ & MTL)</title>
+    
+    <!-- A-Frame dan AR.js -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ar.js@latest/aframe/build/aframe-ar.min.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+
+    <!-- Scene AR -->
+    <a-scene embedded arjs>
+        <!-- Deteksi marker pattern -->
+        <a-marker type="pattern" url="hiro.patt">
+            <!-- Model 3D (OBJ + MTL) -->
+            <a-entity id="model" 
+                      obj-model="obj: url(models/test.obj); mtl: url(models/test.mtl)"
+                      position="0 0 0"
+                      scale="0.5 0.5 0.5"
+                      rotation="0 180 0">
+            </a-entity>
+        </a-marker>
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        // Interaksi dengan model 3D
+        document.addEventListener("DOMContentLoaded", function () {
+            let model = document.getElementById("model");
+            let scaleFactor = 1;
+            let rotationSpeed = 0.05;
+
+            // Zoom menggunakan scroll
+            window.addEventListener("wheel", function (event) {
+                scaleFactor += event.deltaY * -0.001;
+                scaleFactor = Math.max(0.5, Math.min(2, scaleFactor)); // Batas zoom
+                model.setAttribute("scale", `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
+            });
+
+            // Drag untuk rotasi
+            let isDragging = false;
+            let lastX;
+            window.addEventListener("mousedown", function (event) {
+                isDragging = true;
+                lastX = event.clientX;
+            });
+
+            window.addEventListener("mouseup", function () {
+                isDragging = false;
+            });
+
+            window.addEventListener("mousemove", function (event) {
+                if (isDragging) {
+                    let deltaX = event.clientX - lastX;
+                    let rotation = model.getAttribute("rotation");
+                    rotation.y += deltaX * rotationSpeed;
+                    model.setAttribute("rotation", rotation);
+                    lastX = event.clientX;
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
