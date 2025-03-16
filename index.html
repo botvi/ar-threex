@@ -43,7 +43,7 @@
     </div>
 
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        <a-marker type="pattern" url="hiro.patt">
+        <a-marker type="pattern" url="akar.patt">
             <a-entity id="model"
                       gltf-model="url(models/akar.glb)"
                       position="0 0 0"
@@ -57,20 +57,20 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const model = document.getElementById("model");
-            let scaleFactor = 0.2;
-            let initialScale = 0.2;
+            let scaleFactor = 1.0;
+            let initialScale = 1.0;
             let lastX, lastY;
             let isRotating = false;
             
             // Fungsi untuk mengatur skala dengan animasi smooth
             function setScale(newScale) {
-                scaleFactor = Math.max(0.1, Math.min(1.0, newScale));
+                scaleFactor = Math.max(0.5, Math.min(3.0, newScale));
                 model.setAttribute("scale", `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
             }
 
             // Kontrol tombol
-            document.getElementById("zoomIn").addEventListener("click", () => setScale(scaleFactor + 0.1));
-            document.getElementById("zoomOut").addEventListener("click", () => setScale(scaleFactor - 0.1));
+            document.getElementById("zoomIn").addEventListener("click", () => setScale(scaleFactor + 0.25));
+            document.getElementById("zoomOut").addEventListener("click", () => setScale(scaleFactor - 0.25));
             document.getElementById("resetView").addEventListener("click", () => {
                 setScale(initialScale);
                 model.setAttribute("rotation", "0 180 0");
@@ -107,7 +107,7 @@
             
             document.addEventListener("wheel", (e) => {
                 e.preventDefault();
-                setScale(scaleFactor + (e.deltaY * -0.0005));
+                setScale(scaleFactor + (e.deltaY * -0.002));
             });
 
             document.addEventListener("touchstart", (e) => {
@@ -125,7 +125,7 @@
                     const distance = Math.sqrt(dx * dx + dy * dy);
 
                     if (lastPinchDistance !== null) {
-                        const delta = (distance - lastPinchDistance) * 0.001;
+                        const delta = (distance - lastPinchDistance) * 0.003;
                         setScale(scaleFactor + delta);
                     }
                     lastPinchDistance = distance;
