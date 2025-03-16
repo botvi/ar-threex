@@ -25,22 +25,13 @@
             z-index: 1000;
             display: flex;
             gap: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px;
-            border-radius: 25px;
         }
         .ar-button {
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.8);
             border: none;
-            border-radius: 15px;
-            font-size: 14px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: all 0.2s;
-        }
-        .ar-button:active {
-            transform: scale(0.95);
-            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -54,7 +45,7 @@
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
         <a-marker type="pattern" url="hiro.patt">
             <a-entity id="model"
-                      obj-model="obj: url(models/fish-2.obj);" material="src: url(models/fish-2.mtl)"
+                      obj-model="obj: url(models/akar.obj); mtl: url(models/akar.mtl)"
                       position="0 0 0"
                       scale="0.2 0.2 0.2"
                       rotation="0 180 0">
@@ -92,27 +83,16 @@
                 lastY = e.clientY;
             });
 
-            // Tambahkan smooth animation untuk rotasi
-            function setRotation(angle) {
-                const currentRotation = model.getAttribute("rotation");
-                model.setAttribute("animation", {
-                    property: "rotation",
-                    to: `0 ${angle} 0`,
-                    dur: 300,
-                    easing: "easeOutQuad"
-                });
-            }
-
-            // Perbaikan sensitivitas rotasi
             document.addEventListener("pointermove", (e) => {
                 if (!isRotating) return;
                 
                 const deltaX = e.clientX - lastX;
                 const rotation = model.getAttribute("rotation");
-                const newAngle = rotation.y + (deltaX * 0.3); // Kurangi sensitivitas
-                setRotation(newAngle);
+                rotation.y += deltaX * 0.5;
+                model.setAttribute("rotation", rotation);
                 
                 lastX = e.clientX;
+                lastY = e.clientY;
             });
 
             document.addEventListener("pointerup", () => {
@@ -145,7 +125,7 @@
                     const distance = Math.sqrt(dx * dx + dy * dy);
 
                     if (lastPinchDistance !== null) {
-                        const delta = (distance - lastPinchDistance) * 0.0008; // Kurangi sensitivitas
+                        const delta = (distance - lastPinchDistance) * 0.001;
                         setScale(scaleFactor + delta);
                     }
                     lastPinchDistance = distance;
@@ -154,18 +134,6 @@
 
             document.addEventListener("touchend", () => {
                 lastPinchDistance = null;
-            });
-
-            // Tambahkan double tap untuk reset
-            let lastTap = 0;
-            document.addEventListener("touchend", (e) => {
-                const currentTime = new Date().getTime();
-                const tapLength = currentTime - lastTap;
-                if (tapLength < 500 && tapLength > 0) {
-                    setScale(initialScale);
-                    setRotation(180);
-                }
-                lastTap = currentTime;
             });
         });
     </script>
